@@ -1,12 +1,20 @@
 package model
 
-import "gopkg.in/mgo.v2/bson"
+import (
+	"github.com/noxue/mgodb"
+	"gopkg.in/mgo.v2/bson"
+)
 
 // 用户组
 type UserGroup struct {
-	Id   bson.ObjectId
-	Name string // 用户组名称
-	Icon string // 用户组图标
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
+	Name  string // 用户组名称
+	Icon  string // 用户组图标
+}
+
+func (this *UserGroup)GetCName() string {
+	return "usergroup"
 }
 
 type Sex int
@@ -19,7 +27,8 @@ const (
 
 // 用户
 type User struct {
-	Id        bson.ObjectId
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Group     bson.ObjectId // 所属用户组ID
 	Name      string        // 昵称
 	RealName  string        // 真实姓名
@@ -32,7 +41,11 @@ type User struct {
 	Fans      int           // 粉丝个数
 	Extends   []UserExtend  // 扩展信息
 	Disable   int           // 禁言时长，-1表示永久禁言
-	Time
+	Time      `bson:",inline"`
+}
+
+func (this User) GetName() string {
+	return "user"
 }
 
 // 用户扩展信息
@@ -56,40 +69,57 @@ const (
 
 // 授权登陆信息
 type Auth struct {
-	User   bson.ObjectId // 用户ID
-	Type   AuthType      // 授权登陆类型
-	Id     string        // 账号
-	Secret string        // 密码
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
+	User     bson.ObjectId   // 用户ID
+	Type     AuthType        // 授权登陆类型
+	Username string          // 账号
+	Password string          // 密码
+	Time     `bson:",inline"` // 记录什么时候注册或绑定
+}
+
+func(this *Auth)GetCName() string {
+	return "auth"
 }
 
 // 授权信息,记录哪个用户组可以访问哪些api
 type Permission struct {
-	Id    bson.ObjectId
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Api   string        // 允许访问的api地址
 	Group bson.ObjectId // 用户组
 }
 
+func (this *Permission)GetCName() string {
+	return "permission"
+}
+
 // 登陆日志
 type LoginLog struct {
-	Id bson.ObjectId
-	Ip string // 登陆IP
-	Ua string // 浏览器类型
-	Time
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
+	Ip    string // 登陆IP
+	Ua    string // 浏览器类型
+	Time  `bson:",inline"`
+}
+
+func (this *LoginLog)GetCName() string {
+	return "loginlog"
 }
 
 // 用户登陆
 type UserLogin struct {
-	Type   int    // 登陆类型
-	Id     string // 账号
-	Secret string // 密码
-	Code   string // 验证码
+	Type     int    // 登陆类型
+	Username string // 账号
+	Password string // 密码
+	Code     string // 验证码
 }
 
 // 用户注册
 type UserReg struct {
-	Type   int    // 登陆类型
-	Name   string // 名字
-	Id     string // 账号
-	Secret string // 密码
-	Code   string // 验证码
+	Type     int    // 登陆类型
+	Name     string // 名字
+	Username string // 账号
+	Password string // 密码
+	Code     string // 验证码
 }

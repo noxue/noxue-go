@@ -1,8 +1,9 @@
 package model
 
-import "gopkg.in/mgo.v2/bson"
-
-
+import (
+	"github.com/noxue/mgodb"
+	"gopkg.in/mgo.v2/bson"
+)
 
 type ArticleType int
 
@@ -14,6 +15,7 @@ const (
 	ArticleTypeAsk      // 问答
 	ArticleTypeJob      // 招聘
 	ArticleTypeNotice   // 公告
+	ArticleTypeCourse   // 教程讨论贴，只在指定的教程中显示
 )
 
 type ArticleStatus int
@@ -31,15 +33,21 @@ const (
 
 // 文章分类（通过不同语言分类，类似社区板块）
 type Class struct {
-	Id    bson.ObjectId
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Name  string // 分类名称
 	Order int    // 排序编号，越小越靠前
 }
 
+func (this *Class) GetCName() string {
+	return "class"
+}
+
 // 文章
 type Article struct {
-	Id           bson.ObjectId
-	Class        bson.ObjectId // 分类编号
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
+	Class        bson.ObjectId // 分类编号，如果是教程讨论帖，这里保存教程ID
 	Title        string        // 文章标题
 	Author       bson.ObjectId // 作者ID
 	Content      string        // 文章内容
@@ -51,7 +59,11 @@ type Article struct {
 	Tags         []string      // 标签
 	Status       ArticleStatus // 文章状态
 	Type         ArticleType   // 文章分类
-	Time
+	Time         `bson:",inline"`
+}
+
+func (this Article) GetCName() string {
+	return "articles"
 }
 
 type CommentStatus int
@@ -64,11 +76,16 @@ const (
 
 // 评论
 type Comments struct {
-	Id      bson.ObjectId
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Article bson.ObjectId // 文章ID
 	User    bson.ObjectId // 评论者ID
 	Content string        // 评论内容
 	Good    int           // 点赞数
 	Status  CommentStatus // 评论状态
-	Time
+	Time `bson:",inline"`
+}
+
+func (this *Comments) GetCName() string {
+	return "comments"
 }

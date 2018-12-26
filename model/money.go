@@ -1,6 +1,9 @@
 package model
 
-import "gopkg.in/mgo.v2/bson"
+import (
+	"github.com/noxue/mgodb"
+	"gopkg.in/mgo.v2/bson"
+)
 
 type MoneyType int
 
@@ -13,16 +16,27 @@ const (
 
 // 虚拟货币
 type Money struct {
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	User bson.ObjectId // 用户ID
 	Type MoneyType     // 虚拟货币类型
 }
 
+func (this *Money) GetCName() string {
+	return "money"
+}
+
 // 虚拟货币变动日志
 type MoneyLog struct {
-	Id     bson.ObjectId
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	User   bson.ObjectId // 用户ID
 	Type   MoneyType     // 货币类型
 	Change int           // 改变的货币数，正数为增，负数为减
 	Reason string        // 改变的原因
-	Time
+	Time `bson:",inline"`
+}
+
+func (this *MoneyLog) GetCName() string {
+	return "moneylog"
 }

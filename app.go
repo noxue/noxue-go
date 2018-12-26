@@ -2,9 +2,19 @@ package main
 
 import (
 	"fmt"
-	"math"
+	"noxue/model"
 )
 
 func main() {
-	fmt.Println(math.MaxInt32)
+	a := &model.Tag{
+		Name:"asdfasdf",
+	}
+	a.SetDoc(a)
+	err:=a.Save()
+
+	var b model.Tag
+
+	err = a.FindByPk("5c22bd18311f62802e8aa332",&b)
+
+	fmt.Println(b,err,b.Id.Hex())
 }

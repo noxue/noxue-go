@@ -9,3 +9,4 @@ type Time struct {
 	UpdatedAt time.Time
 	DeletedAt time.Time
 }
+

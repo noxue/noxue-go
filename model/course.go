@@ -1,11 +1,16 @@
 package model
 
-import "gopkg.in/mgo.v2/bson"
+import (
+	"github.com/noxue/mgodb"
+	"gopkg.in/mgo.v2/bson"
+)
 
 // 教程列表
 type Course struct {
-	Id       bson.ObjectId
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Author   bson.ObjectId // 作者
+	Finished bool          // 是否完结，false表示更新中
 	Chapters []struct {
 		Order int    // 排序编号
 		Title string // 章节名称
@@ -20,11 +25,19 @@ type Course struct {
 	}
 }
 
+func (this *Course) GetCName() string {
+	return "course"
+}
+
 // 教程内容
 type CourseItem struct {
-	Article      // 继承文章所有字段
-	Price int    // 教程价格
-	Video string // 视频地址
+	Article `bson:",inline"` // 继承文章所有字段
+	Price   int             // 教程价格
+	Video   string          // 视频地址
+}
+
+func (this *CourseItem) GetCName() string {
+	return "courseitem"
 }
 
 // 订单类型
@@ -37,11 +50,16 @@ const (
 
 // 订单记录
 type Order struct {
-	Id       bson.ObjectId
+	mgodb.Model `bson:",inline"`
+	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	User     bson.ObjectId // 用户
 	Name     string        // 订单名称
 	Type     OrderType     // 订单名称
 	Finished bool          // 是否完成订单
 	Closed   bool          // 订单是否关闭，默认false
-	Time
+	Time     `bson:",inline"`
+}
+
+func (this *Order) GetCName() string {
+	return "order"
 }
