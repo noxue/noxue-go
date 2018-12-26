@@ -1,11 +1,10 @@
-package main
+/**
+ * @author 刘荣飞 yes@noxue.com
+ * @date 2018/12/26 23:55
+ */
 
-import (
-	"fmt"
-	"noxue/dao"
-)
+ package main
 
 func main() {
 
-	fmt.Println(dao.UserDao.Select(nil,[]string{"-name"}, 2,3))
 }
