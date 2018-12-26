@@ -1,21 +1,7 @@
-# github.com/golang/protobuf v1.2.0
-github.com/golang/protobuf/proto
-# github.com/noxue/mgodb v0.0.0-20150303183006-591245875616
+# github.com/noxue/mgodb v1.0.1
 github.com/noxue/mgodb
-# golang.org/x/net v0.0.0-20181220203305-927f97764cc3
-golang.org/x/net/context/ctxhttp
-golang.org/x/net/context
-# golang.org/x/oauth2 v0.0.0-20181203162652-d668ce993890
-golang.org/x/oauth2
-golang.org/x/oauth2/internal
-# google.golang.org/appengine v1.4.0
-google.golang.org/appengine/urlfetch
-google.golang.org/appengine/internal
-google.golang.org/appengine/internal/urlfetch
-google.golang.org/appengine/internal/base
-google.golang.org/appengine/internal/datastore
-google.golang.org/appengine/internal/log
-google.golang.org/appengine/internal/remote_api
+# github.com/pkg/errors v0.8.0
+github.com/pkg/errors
 # gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
 gopkg.in/mgo.v2/bson
 gopkg.in/mgo.v2
