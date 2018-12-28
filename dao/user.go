@@ -307,9 +307,48 @@ func (UserDaoType) PermissionRemoveById(id string) (err error) {
 	return
 }
 
-func (UserDaoType) PermissionEditById(id string, p model.Permission) (err error){
-	err = p.UpdateId(id, ormgo.M{"api":p.Api,"group":p.Group})
+func (UserDaoType) PermissionEditById(id string, p model.Permission) (err error) {
+	err = p.UpdateId(id, ormgo.M{"api": p.Api, "group": p.Group})
 	return
 }
 
 //================================================================================================================
+
+func (UserDaoType) LoginLogInsert(log model.LoginLog) (err error) {
+	err = ormgo.Save(log)
+	return
+}
+
+func (UserDaoType) LoginLogSelect(condition ormgo.M, selector map[string]bool, sorts []string, page, size int) (logs []model.LoginLog, total int, err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			err = e.(utils.Error)
+		}
+	}()
+
+	query := ormgo.Query{
+		Condition:  condition,
+		Limit:      size,
+		Skip:       (page - 1) * size,
+		Selector:   selector,
+		SortFields: sorts,
+	}
+
+	log := &model.LoginLog{}
+	log.SetDoc(log)
+
+	total, err = log.Count(query)
+	utils.CheckErr(err)
+
+	err = ormgo.FindAll(query, &logs)
+
+	return
+}
+
+func (UserDaoType) LoginLogRemove(condition ormgo.M) (err error) {
+	log := &model.LoginLog{}
+	log.SetDoc(log)
+
+	_, err = log.RemoveAll(condition)
+	return
+}
