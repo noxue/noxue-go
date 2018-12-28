@@ -61,8 +61,8 @@ func (UserDaoType) GroupSelect(condition ormgo.M, sorts []string, page, size int
 func (UserDaoType) GroupEditById(id string, userGroup *model.UserGroup) (err error) {
 
 	if userGroup == nil {
-		glog.Error("userGroup不能为nil")
-		err = errors.New("userGroup不能为nil")
+		glog.Error("userGroup不能为空指针")
+		err = errors.New("userGroup不能为空指针")
 		return
 	}
 
@@ -83,10 +83,6 @@ func (UserDaoType) GroupFindById(id string) (userGroup model.UserGroup, err erro
 
 // 删除用户组
 func (UserDaoType) GroupRemove(id string) (err error) {
-	if !bson.IsObjectIdHex(id) {
-		err = errors.New("用户组ID不正确")
-		return
-	}
 	err = model.NewUserGroup().RemoveById(id)
 	return
 }
