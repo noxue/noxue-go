@@ -6,7 +6,7 @@
  package model
 
 import (
-	"github.com/noxue/mgodb"
+	"gopkg.in/noxue/ormgo.v1"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -21,19 +21,17 @@ const (
 
 // 虚拟货币
 type Money struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	User bson.ObjectId // 用户ID
 	Type MoneyType     // 虚拟货币类型
 }
 
-func (this *Money) GetCName() string {
-	return "money"
-}
+
 
 // 虚拟货币变动日志
 type MoneyLog struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	User   bson.ObjectId // 用户ID
 	Type   MoneyType     // 货币类型
@@ -42,6 +40,3 @@ type MoneyLog struct {
 	Time `bson:",inline"`
 }
 
-func (this *MoneyLog) GetCName() string {
-	return "moneylog"
-}

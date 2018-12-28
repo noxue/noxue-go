@@ -3,16 +3,16 @@
  * @date 2018/12/26 23:55
  */
 
- package model
+package model
 
 import (
-	"github.com/noxue/mgodb"
 	"gopkg.in/mgo.v2/bson"
+	"gopkg.in/noxue/ormgo.v1"
 )
 
 // 用户组
 type UserGroup struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id          bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Name        string // 用户组名称
 	Icon        string // 用户组图标
@@ -24,16 +24,11 @@ func NewUserGroup() *UserGroup {
 	return ug
 }
 
-// 获取表名
-func (this *UserGroup) GetCName() string {
-	return "groups"
+func NewUser() *User {
+	u := new(User)
+	u.SetDoc(u)
+	return u
 }
-
-// 获取id，根据id查询的时候需要调用此函数获取文档id
-func (this *UserGroup) GetId() string {
-	return this.Id.Hex()
-}
-
 
 type Sex int
 
@@ -45,32 +40,22 @@ const (
 
 // 用户
 type User struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id          bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
-	Group       bson.ObjectId // 所属用户组ID
-	Name        string        // 昵称
-	RealName    string        // 真实姓名
-	Sex         Sex           // 性别
-	Avatar      string        // 头像地址
-	Email       string        // 邮箱地址
-	Phone       string        // 手机号
-	Summary     string        // 用户简介
-	Followers   int           // 用户关注的人数
-	Fans        int           // 粉丝个数
-	Extends     []UserExtend  // 扩展信息
-	Disable     int           // 禁言时长，-1表示永久禁言
-	Time        `bson:",inline"`
+	Group       bson.ObjectId `json:",omitempty"` // 所属用户组ID
+	Name        string        `json:",omitempty"` // 昵称
+	RealName    string        `json:",omitempty"` // 真实姓名
+	Sex         Sex           `json:",omitempty"` // 性别
+	Avatar      string        `json:",omitempty"` // 头像地址
+	Email       string        `json:",omitempty"` // 邮箱地址
+	Phone       string        `json:",omitempty"` // 手机号
+	Summary     string        `json:",omitempty"` // 用户简介
+	Followers   int           `json:",omitempty"` // 用户关注的人数
+	Fans        int           `json:",omitempty"` // 粉丝个数
+	Extends     []UserExtend  `json:",omitempty"` // 扩展信息
+	Disable     int           `json:",omitempty"` // 禁言时长，-1表示永久禁言
+	Time        `bson:",inline" json:"Id,omitempty"`
 }
-
-func (this User) GetCName() string {
-	return "users"
-}
-
-
-func (this User) GetId() string {
-	return this.Id.Hex()
-}
-
 
 // 用户扩展信息
 type UserExtend struct {
@@ -93,7 +78,7 @@ const (
 
 // 授权登陆信息
 type Auth struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id          bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	User        bson.ObjectId    // 用户ID
 	Type        AuthType         // 授权登陆类型
@@ -102,33 +87,21 @@ type Auth struct {
 	Time        `bson:",inline"` // 记录什么时候注册或绑定
 }
 
-func (this *Auth) GetCName() string {
-	return "auth"
-}
-
 // 授权信息,记录哪个用户组可以访问哪些api
 type Permission struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id          bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Api         string        // 允许访问的api地址
 	Group       bson.ObjectId // 用户组
 }
 
-func (this *Permission) GetCName() string {
-	return "permission"
-}
-
 // 登陆日志
 type LoginLog struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id          bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Ip          string // 登陆IP
 	Ua          string // 浏览器类型
 	Time        `bson:",inline"`
-}
-
-func (this *LoginLog) GetCName() string {
-	return "loginlog"
 }
 
 // 用户登陆

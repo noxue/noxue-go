@@ -6,7 +6,7 @@
  package model
 
 import (
-	"github.com/noxue/mgodb"
+	"gopkg.in/noxue/ormgo.v1"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -22,7 +22,7 @@ const (
 
 // 记录 系统通知/私信/动态
 type Notice struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	User         bson.ObjectId // 通知给谁
 	Article      bson.ObjectId // 帖子Id
@@ -34,6 +34,3 @@ type Notice struct {
 	Time         `bson:",inline"`
 }
 
-func (this *Notice) GetCName() string {
-	return "notice"
-}

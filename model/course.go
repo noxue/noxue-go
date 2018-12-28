@@ -6,13 +6,13 @@
 package model
 
 import (
-	"github.com/noxue/mgodb"
+	"gopkg.in/noxue/ormgo.v1"
 	"gopkg.in/mgo.v2/bson"
 )
 
 // 教程列表
 type Course struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Author   bson.ObjectId // 作者
 	Finished bool          // 是否完结，false表示更新中
@@ -30,9 +30,6 @@ type Course struct {
 	}
 }
 
-func (this *Course) GetCName() string {
-	return "course"
-}
 
 // 教程内容
 type CourseItem struct {
@@ -41,9 +38,7 @@ type CourseItem struct {
 	Video   string          // 视频地址
 }
 
-func (this *CourseItem) GetCName() string {
-	return "courseitem"
-}
+
 
 // 订单类型
 type OrderType int
@@ -55,7 +50,7 @@ const (
 
 // 订单记录
 type Order struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	User     bson.ObjectId // 用户
 	Name     string        // 订单名称
@@ -65,6 +60,3 @@ type Order struct {
 	Time     `bson:",inline"`
 }
 
-func (this *Order) GetCName() string {
-	return "order"
-}

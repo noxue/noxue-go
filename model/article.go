@@ -6,7 +6,7 @@
 package model
 
 import (
-	"github.com/noxue/mgodb"
+	"gopkg.in/noxue/ormgo.v1"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -38,19 +38,16 @@ const (
 
 // 文章分类（通过不同语言分类，类似社区板块）
 type Class struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Name  string // 分类名称
 	Order int    // 排序编号，越小越靠前
 }
 
-func (this *Class) GetCName() string {
-	return "class"
-}
 
 // 文章
 type Article struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Class        bson.ObjectId // 分类编号，如果是教程讨论帖，这里保存教程ID
 	Title        string        // 文章标题
@@ -67,9 +64,7 @@ type Article struct {
 	Time         `bson:",inline"`
 }
 
-func (this Article) GetCName() string {
-	return "articles"
-}
+
 
 type CommentStatus int
 
@@ -81,7 +76,7 @@ const (
 
 // 评论
 type Comments struct {
-	mgodb.Model `bson:",inline"`
+	ormgo.Model `bson:",inline"`
 	Id bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Article bson.ObjectId // 文章ID
 	User    bson.ObjectId // 评论者ID
@@ -91,6 +86,3 @@ type Comments struct {
 	Time `bson:",inline"`
 }
 
-func (this *Comments) GetCName() string {
-	return "comments"
-}
