@@ -43,14 +43,13 @@ func (UserDaoType) GroupInsert(name string, icon string) (err error) {
 	return ug.Save()
 }
 
-func (UserDaoType) GroupSelect(condition ormgo.M, sorts []string, page, size int, contain ormgo.ContainType) (userGroups []model.UserGroup, err error) {
+func (UserDaoType) GroupSelect(condition ormgo.M, sorts []string, page, size int) (userGroups []model.UserGroup, err error) {
 
 	query := ormgo.Query{
 		Condition:  condition,
 		SortFields: sorts,
 		Limit:      size,
 		Skip:       (page - 1) * size,
-		Contain:    contain,
 	}
 
 	err = ormgo.FindAll(query, &userGroups)
@@ -84,6 +83,16 @@ func (UserDaoType) GroupFindById(id string) (userGroup model.UserGroup, err erro
 // 删除用户组
 func (UserDaoType) GroupRemove(id string) (err error) {
 	err = model.NewUserGroup().RemoveById(id)
+	return
+}
+
+// 统计用户组个数
+func (UserDaoType) GroupCount(conditions ormgo.M) (n int, err error) {
+	g := &model.UserGroup{}
+	g.SetDoc(g)
+	n, err = g.Count(ormgo.Query{
+		Condition: conditions,
+	})
 	return
 }
 
@@ -174,40 +183,69 @@ func (UserDaoType) UserRemoveById(id string, really bool) (err error) {
 	return
 }
 
-// =================================================================================================================
+func (UserDaoType) UserCount(conditions ormgo.M, containType ormgo.ContainType) (n int, err error) {
+	u := &model.User{}
+	u.SetDoc(u)
 
-func (UserDaoType) AuthExists(auth *model.Auth) bool {
-	auth.SetDoc(auth)
-	n, err := auth.Count(ormgo.Query{
-		Condition: ormgo.M{
-			"type":     auth.Type,
-			"username": auth.Username,
+	n, err = u.Count(ormgo.Query{
+		Condition: conditions,
+		Contain:   containType,
+	})
+	return
+}
+
+// 把用户添加到指定的用户组中
+func (UserDaoType) UserAddToGroups(uid string, groupIds []string) (err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			err = e.(utils.Error)
+		}
+	}()
+
+	u := model.User{}
+	u.SetDoc(u)
+
+	var ids []bson.ObjectId
+	for _, v := range groupIds {
+		ids = append(ids, bson.ObjectIdHex(v))
+	}
+
+	err = u.UpdateId(uid, ormgo.M{
+		"$addToSet": ormgo.M{
+			"groups": ormgo.M{
+				"$each": ids,
+			},
 		},
 	})
 
-	if err != nil || n == 0 {
-		return true
-	}
+	utils.CheckErr(err)
 
-	return false
+	return
 }
 
+// =================================================================================================================
+
 func (this *UserDaoType) AuthInsert(auth *model.Auth) (err error) {
-	if this.AuthExists(auth) {
-		err = errors.New("用户已存在[" + auth.Username + "]")
+	auth.CreatedAt = time.Now().UTC()
+	auth.UpdatedAt = time.Now().UTC()
+	if !bson.IsObjectIdHex(auth.User.Hex()) {
+		err = errors.New("Auth指定的user Id格式不正确")
 		return
 	}
-	auth.CreatedAt = time.Now().UTC()
 	err = ormgo.Save(auth)
 	return
 }
 
-func (this *UserDaoType) AuthFind(typeName, username, password string) (auth model.Auth, err error) {
+func (this *UserDaoType) AuthFind(authType model.AuthType, name string, isThird bool) (auth model.Auth, err error) {
+	cond := ormgo.M{
+		"name":  name,
+		"third": isThird,
+	}
+	if authType != 0 {
+		cond["type"] = authType
+	}
 	err = ormgo.FindOne(
-		ormgo.M{
-			"type":     auth.Type,
-			"username": auth.Username,
-			"password": auth.Password},
+		cond,
 		nil,
 		&auth,
 	)
@@ -241,21 +279,31 @@ func (this *UserDaoType) AuthRemoveById(id string) (err error) {
 	return
 }
 
+func (UserDaoType) AuthCount(conditions ormgo.M) (n int, err error) {
+	auth := &model.Auth{}
+	auth.SetDoc(auth)
+
+	n, err = auth.Count(ormgo.Query{
+		Condition: conditions,
+	})
+	return
+}
+
 //=========================================================================================================
 
-func (UserDaoType) PermissionInsert(p model.Permission) (err error) {
+func (UserDaoType) ResourceInsert(r model.Resource) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
 			err = e.(utils.Error)
 		}
 	}()
 
-	p.SetDoc(p)
+	r.SetDoc(r)
 	var n int
-	n, err = p.Count(ormgo.Query{
+	n, err = r.Count(ormgo.Query{
 		Condition: ormgo.M{
-			"api":   p.Api,
-			"group": p.Group,
+			"api":   r.Api,
+			"group": r.Group,
 		},
 	})
 	utils.CheckErr(err)
@@ -263,11 +311,11 @@ func (UserDaoType) PermissionInsert(p model.Permission) (err error) {
 		utils.CheckErr(errors.New("该规则已存在"))
 	}
 
-	err = ormgo.Save(p)
+	err = ormgo.Save(r)
 	return
 }
 
-func (UserDaoType) PermissionSelect(condition ormgo.M, selector map[string]bool, sorts []string, page, size int) (ps []model.Permission, total int, err error) {
+func (UserDaoType) ResourceSelect(condition ormgo.M, selector map[string]bool, sorts []string, page, size int) (rs []model.Resource, total int, err error) {
 	defer func() {
 		if e := recover(); e != nil {
 			err = e.(utils.Error)
@@ -282,29 +330,40 @@ func (UserDaoType) PermissionSelect(condition ormgo.M, selector map[string]bool,
 		SortFields: sorts,
 	}
 
-	p := &model.Permission{}
+	p := &model.Resource{}
 	p.SetDoc(p)
 	total, err = p.Count(query)
 	utils.CheckErr(err)
 
-	err = ormgo.FindAll(query, &ps)
+	err = ormgo.FindAll(query, &rs)
 	return
 }
 
-func (UserDaoType) PermissionFindById(id string) (p model.Permission, err error) {
-	err = ormgo.FindById(id, nil, &p)
+func (UserDaoType) ResourceFindById(id string) (r model.Resource, err error) {
+	err = ormgo.FindById(id, nil, &r)
 	return
 }
 
-func (UserDaoType) PermissionRemoveById(id string) (err error) {
-	p := &model.Permission{}
+func (UserDaoType) ResourceRemoveById(id string) (err error) {
+	p := &model.Resource{}
 	p.SetDoc(p)
 	err = p.RemoveById(id)
 	return
 }
 
-func (UserDaoType) PermissionEditById(id string, p model.Permission) (err error) {
-	err = p.UpdateId(id, ormgo.M{"api": p.Api, "group": p.Group})
+func (UserDaoType) ResourceEditById(id string, r model.Resource) (err error) {
+	err = r.UpdateId(id, ormgo.M{"api": r.Api, "group": r.Group})
+	return
+}
+
+func (UserDaoType) ResourceCount(conditions ormgo.M) (n int, err error) {
+	query := ormgo.Query{
+		Condition: conditions,
+	}
+
+	p := &model.Resource{}
+	p.SetDoc(p)
+	n, err = p.Count(query)
 	return
 }
 

@@ -6,6 +6,7 @@
 package model
 
 import (
+	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/noxue/ormgo.v1"
 )
@@ -41,28 +42,19 @@ const (
 // 用户
 type User struct {
 	ormgo.Model `bson:",inline"`
-	Id          bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
-	Group       bson.ObjectId `json:",omitempty"` // 所属用户组ID
-	Name        string        `json:",omitempty"` // 昵称
-	RealName    string        `json:",omitempty"` // 真实姓名
-	Sex         Sex           `json:",omitempty"` // 性别
-	Avatar      string        `json:",omitempty"` // 头像地址
-	Email       string        `json:",omitempty"` // 邮箱地址
-	Phone       string        `json:",omitempty"` // 手机号
-	Summary     string        `json:",omitempty"` // 用户简介
-	Followers   int           `json:",omitempty"` // 用户关注的人数
-	Fans        int           `json:",omitempty"` // 粉丝个数
-	Extends     []UserExtend  `json:",omitempty"` // 扩展信息
-	Disable     int           `json:",omitempty"` // 禁言时长，-1表示永久禁言
+	Id          bson.ObjectId   `bson:"_id,omitempty" json:"Id,omitempty"`
+	Groups      []bson.ObjectId `json:",omitempty"` // 所属用户组ID
+	Name        string          `json:",omitempty"` // 昵称
+	RealName    string          `json:",omitempty"` // 真实姓名
+	Sex         Sex             `json:",omitempty"` // 性别
+	Avatar      string          `json:",omitempty"` // 头像地址
+	Email       string          `json:",omitempty"` // 邮箱地址
+	Phone       string          `json:",omitempty"` // 手机号
+	Summary     string          `json:",omitempty"` // 用户简介
+	Followers   int             `json:",omitempty"` // 用户关注的人数
+	Fans        int             `json:",omitempty"` // 粉丝个数
+	Disable     int             `json:",omitempty"` // 禁言时长，-1表示永久禁言
 	Time        `bson:",inline" json:"Id,omitempty"`
-}
-
-// 用户扩展信息
-type UserExtend struct {
-	Name  string // 用来区分的标题
-	Title string // 用于显示的名称
-	Value string // 内容
-	Desc  string // 描述该信息的内容
 }
 
 // 授权类型
@@ -82,13 +74,23 @@ type Auth struct {
 	Id          bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	User        bson.ObjectId    // 用户ID
 	Type        AuthType         // 授权登陆类型
-	Username    string           // 账号
-	Password    string           // 密码
+	Name        string           // 账号
+	Secret      string           // 密码
+	Third       bool             // 是否时第三方登陆
 	Time        `bson:",inline"` // 记录什么时候注册或绑定
 }
 
+// 在保存密码的时候自动加密密码
+func (this *Auth) BeforeSave() {
+	hash, err := bcrypt.GenerateFromPassword([]byte(this.Secret), bcrypt.DefaultCost)
+	if err != nil {
+		ormgo.CheckErr(err)
+	}
+	this.Secret = string(hash)
+}
+
 // 授权信息,记录哪个用户组可以访问哪些api
-type Permission struct {
+type Resource struct {
 	ormgo.Model `bson:",inline"`
 	Id          bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
 	Api         string        // 允许访问的api地址
