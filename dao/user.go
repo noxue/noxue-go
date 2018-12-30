@@ -106,23 +106,7 @@ func (UserDaoType) UserInsert(user *model.User) (err error) {
 		}
 	}()
 
-	if user == nil {
-		glog.Error("user不能是nil")
-		err = errors.New("user不能是nil")
-		return
-	}
-
 	user.SetDoc(user)
-
-	// 判断用户是否已存在
-	n, err := user.Count(ormgo.Query{
-		Condition: ormgo.M{"name": user.Name},
-	})
-	utils.CheckErr(err)
-	if n > 0 {
-		err = errors.New("用户名 [" + user.Name + "] 已存在")
-		return
-	}
 
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
@@ -158,10 +142,24 @@ func (UserDaoType) UserSelect(condition ormgo.M, selector map[string]bool, sorts
 	return
 }
 
-func (UserDaoType) UserEditById(id string, v ormgo.M) (err error) {
+func (UserDaoType) UserFind(condition ormgo.M) (user model.User, err error) {
+	err = ormgo.FindOne(condition, nil, &user)
+	return
+}
+
+func (UserDaoType) UserEditById(id string, v interface{}) (err error) {
 	u := &model.User{}
 	u.SetDoc(u)
-	v["updatedat"] = time.Now().UTC()
+
+	// 根据key判断,$开头表示是指定操作，比如$push之类的操作子文档的就无需添加updatedat
+	if v1, ok := v.(ormgo.M); ok {
+		for key, _ := range v1 {
+			if key[0] != '$' {
+				v1["updatedat"] = time.Now().UTC()
+				break
+			}
+		}
+	}
 	err = u.UpdateId(id, v)
 	return
 }
@@ -194,35 +192,6 @@ func (UserDaoType) UserCount(conditions ormgo.M, containType ormgo.ContainType) 
 	return
 }
 
-// 把用户添加到指定的用户组中
-func (UserDaoType) UserAddToGroups(uid string, groupIds []string) (err error) {
-	defer func() {
-		if e := recover(); e != nil {
-			err = e.(utils.Error)
-		}
-	}()
-
-	u := model.User{}
-	u.SetDoc(u)
-
-	var ids []bson.ObjectId
-	for _, v := range groupIds {
-		ids = append(ids, bson.ObjectIdHex(v))
-	}
-
-	err = u.UpdateId(uid, ormgo.M{
-		"$addToSet": ormgo.M{
-			"groups": ormgo.M{
-				"$each": ids,
-			},
-		},
-	})
-
-	utils.CheckErr(err)
-
-	return
-}
-
 // =================================================================================================================
 
 func (this *UserDaoType) AuthInsert(auth *model.Auth) (err error) {
@@ -252,7 +221,7 @@ func (this *UserDaoType) AuthFind(authType model.AuthType, name string, isThird 
 	return
 }
 
-func (this *UserDaoType) AuthFindByUid(userId string) (auths []model.Auth, err error) {
+func (this *UserDaoType) AuthSelectByUid(userId string) (auths []model.Auth, err error) {
 	err = ormgo.FindAll(
 		ormgo.Query{
 			Condition: ormgo.M{
@@ -272,10 +241,35 @@ func (this *UserDaoType) AuthUpdate(condition ormgo.M, v ormgo.M) (err error) {
 	return
 }
 
-func (this *UserDaoType) AuthRemoveById(id string) (err error) {
+func (this *UserDaoType) AuthUpdateAll(condition ormgo.M, v ormgo.M) (err error) {
 	auth := &model.Auth{}
 	auth.SetDoc(auth)
-	err = auth.RemoveById(id)
+	v["updatedat"] = time.Now().UTC()
+	_, err = auth.UpdateAll(condition, v)
+	return
+}
+
+func (this *UserDaoType) AuthRemoveById(id string, really bool) (err error) {
+	auth := &model.Auth{}
+	auth.SetDoc(auth)
+	if really {
+		err = auth.RemoveTrueById(id)
+	} else {
+		err = auth.RemoveById(id)
+	}
+	return
+}
+
+func (this *UserDaoType) AuthRemoveAll(condition ormgo.M, really bool) (err error) {
+	auth := &model.Auth{}
+	auth.SetDoc(auth)
+
+	if really {
+		_, err = auth.RemoveAllTrue(condition)
+	} else {
+		_, err = auth.RemoveAll(condition)
+	}
+
 	return
 }
 
@@ -291,7 +285,7 @@ func (UserDaoType) AuthCount(conditions ormgo.M) (n int, err error) {
 
 //=========================================================================================================
 
-func (UserDaoType) ResourceInsert(r model.Resource) (err error) {
+func (UserDaoType) ResourceInsert(r *model.Resource) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
 			err = e.(utils.Error)

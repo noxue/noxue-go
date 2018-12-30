@@ -6,9 +6,9 @@
 package model
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/noxue/ormgo.v1"
+	"noxue/utils"
 )
 
 // 用户组
@@ -82,11 +82,11 @@ type Auth struct {
 
 // 在保存密码的时候自动加密密码
 func (this *Auth) BeforeSave() {
-	hash, err := bcrypt.GenerateFromPassword([]byte(this.Secret), bcrypt.DefaultCost)
-	if err != nil {
-		ormgo.CheckErr(err)
+
+	// 不是第三方登陆，就加密密码
+	if !this.Third {
+		this.Secret = utils.EncodePassword(this.Secret)
 	}
-	this.Secret = string(hash)
 }
 
 // 授权信息,记录哪个用户组可以访问哪些api
