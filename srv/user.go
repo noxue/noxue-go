@@ -15,9 +15,21 @@ import (
 	"noxue/utils"
 )
 
-var UserSrv UserService
+var SrvUser UserService
 
 type UserService struct {
+}
+
+func init() {
+	initGroup()
+}
+
+func initGroup() {
+	dao.UserDao.GroupInsert("普通用户", "")
+	dao.UserDao.GroupInsert("实习版主", "")
+	dao.UserDao.GroupInsert("版主", "")
+	dao.UserDao.GroupInsert("管理员", "")
+	dao.UserDao.GroupInsert("站长", "")
 }
 
 func (UserService) GroupExists(name string) (isExists bool, err error) {
@@ -37,6 +49,11 @@ func (UserService) GroupAdd(group model.UserGroup) (err error) {
 
 func (UserService) GroupFindById(id string) (group model.UserGroup, err error) {
 	group, err = dao.UserDao.GroupFindById(id)
+	return
+}
+
+func (UserService) GroupFind(name string) (group model.UserGroup, err error) {
+	group, err = dao.UserDao.GroupFindByName(name)
 	return
 }
 
@@ -170,7 +187,7 @@ func (UserService) UserGetGroups(uid string) (groups []model.UserGroup, err erro
 func (UserService) UserExists(name string) (isExists bool, err error) {
 	var n int
 	n, err = dao.UserDao.UserCount(ormgo.M{"name": name}, ormgo.All)
-	if err == nil {
+	if err != nil {
 		return
 	}
 	isExists = n > 0
@@ -247,7 +264,7 @@ func (UserService) AuthExists(auth *model.Auth) (isExists bool, err error) {
 	var n int
 	n, err = dao.UserDao.AuthCount(ormgo.M{
 		"type":     auth.Type,
-		"username": auth.Name,
+		"name": auth.Name,
 	})
 
 	if err != nil {

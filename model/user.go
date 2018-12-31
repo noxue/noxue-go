@@ -106,19 +106,23 @@ type LoginLog struct {
 	Time        `bson:",inline"`
 }
 
+// ==========================================================================
+
 // 用户登陆
 type UserLogin struct {
-	Type     int    // 登陆类型
-	Username string // 账号
-	Password string // 密码
-	Code     string // 验证码
+	Type   int    // 登陆类型
+	Name   string // 账号
+	Secret string // 密码
+	CodeId string // 验证码Id
+	Code   string // 验证码
 }
 
 // 用户注册
 type UserReg struct {
-	Type     int    // 登陆类型
-	Name     string // 名字
-	Username string // 账号
-	Password string // 密码
-	Code     string // 验证码
+	Type   int    // 登陆类型
+	Nick   string // 名字
+	Name   string // 账号
+	Secret string // 密码
+	CodeId string // 验证码Id
+	Code   string // 验证码
 }

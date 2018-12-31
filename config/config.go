@@ -7,7 +7,6 @@ package config
 import (
 	"encoding/json"
 	"io/ioutil"
-	"noxue/utils"
 )
 
 var Config Conf // 保存所有的配置信息，全局可以访问
@@ -15,14 +14,19 @@ var Config Conf // 保存所有的配置信息，全局可以访问
 func init() {
 	// 读取配置文件
 	bs, err := ioutil.ReadFile(`D:\projects\go\src\noxue\config.json`)
-	utils.CheckErr(err)
+	if err != nil {
+		panic(err)
+	}
 
 	// 解析json数据
 	err = json.Unmarshal(bs, &Config)
-	utils.CheckErr(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
 type Conf struct {
+	Debug  bool   // 是否是调试模式
 	Server Server // 服务器信息配置
 	Db     Db     // 数据库信息
 }

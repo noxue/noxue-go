@@ -80,6 +80,11 @@ func (UserDaoType) GroupFindById(id string) (userGroup model.UserGroup, err erro
 	return
 }
 
+func (UserDaoType) GroupFindByName(name string) (userGroup model.UserGroup, err error) {
+	err = ormgo.FindOne(ormgo.M{"name":name}, nil, &userGroup)
+	return
+}
+
 // 删除用户组
 func (UserDaoType) GroupRemove(id string) (err error) {
 	err = model.NewUserGroup().RemoveById(id)

@@ -1,9 +1,10 @@
 {
-  "server":{
-    "port":8080
+  "debug": true,
+  "server": {
+    "port": 8080
   },
-  "db":{
-    "url":"127.0.0.1:27017",
-    "dbname":"test"
+  "db": {
+    "url": "127.0.0.1:27017",
+    "dbname": "test"
   }
 }

@@ -30,7 +30,7 @@ func TestUserService_UserRegister(t *testing.T) {
 		Secret: "admin",
 	}
 
-	err := UserSrv.UserRegister(user, auth)
+	err := SrvUser.UserRegister(user, auth)
 	if err != nil {
 		t.Error(err)
 	}
@@ -42,7 +42,7 @@ func TestUserService_UserLogin(t *testing.T) {
 		Secret: "admin",
 	}
 
-	u, a, err := UserSrv.UserLogin(auth)
+	u, a, err := SrvUser.UserLogin(auth)
 	if err != nil {
 		t.Error(err)
 	}
@@ -50,14 +50,14 @@ func TestUserService_UserLogin(t *testing.T) {
 }
 
 func TestUserService_UserAddToGroups(t *testing.T) {
-	err := UserSrv.UserAddToGroups("5c28140e8609ab00903e72f5", []string{"5c2813571d3930cf6a79f931"})
+	err := SrvUser.UserAddToGroups("5c28140e8609ab00903e72f5", []string{"5c2813571d3930cf6a79f931"})
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestUserService_UserRemoveFromGroup(t *testing.T) {
-	err := UserSrv.UserRemoveFromGroup("5c28140e8609ab00903e72f5", "5c2813571d3930cf6a79f931")
+	err := SrvUser.UserRemoveFromGroup("5c28140e8609ab00903e72f5", "5c2813571d3930cf6a79f931")
 	if err != nil {
 		t.Error(err)
 	}
