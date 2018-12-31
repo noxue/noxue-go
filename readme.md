@@ -20,7 +20,7 @@
 
 **2018/12/28**
 
-* 封装ormgo库操作mongodb
+* 放弃mgodb，因为功能太不完善，只提供了非常基础的功能，所以自行按照需求封装ormgo库操作mongodb
 * 用ormgo重写user相关的所有dao
 
 
