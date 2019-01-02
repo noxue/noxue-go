@@ -36,14 +36,17 @@ func GenerateVerifyCode(pre string) (key, code string) {
 func CheckVerifyCode(pre, key, code string) error {
 	retCode, err := redis.String(Redis.Do("GET", pre+key))
 	if err != nil {
+		if "redigo: nil returned" == err.Error() {
+			return errors.New("验证码不正确，请确认与收到的验证码是否一致")
+		}
 		return err
 	}
 	if retCode != code {
-		return errors.New("验证码不正确，请重新输入")
+		return errors.New("验证码不正确，请确认与收到的验证码是否一致")
 	}
 
 	// 验证码正确，删除redis中的记录
-	Redis.Do("DEL", key)
+	Redis.Do("DEL", pre+key)
 	return nil
 }
 

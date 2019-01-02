@@ -27,13 +27,13 @@ type ApiError struct {
 	Data string
 }
 
-func CheckApiError(code int, err string) {
-	if err == "" {
+func CheckApiError(code int, err error) {
+	if err == nil {
 		return
 	}
 	panic(ApiError{
 		Code: code,
-		Data: err,
+		Data: err.Error(),
 	})
 }
 

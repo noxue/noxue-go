@@ -28,7 +28,7 @@ func (CodeApi) SendReg(number, numberType string) (key string, err error) {
 	} else if numberType == "email" {
 		err = utils.SendRegCodeEmail(number, code)
 	} else {
-		err = errors.New("目前只能发送手机和邮箱验证码，请确实参数是否是phone和email")
+		err = errors.New("目前只支持邮箱或手机注册，请确认账号格式是否正确")
 	}
 
 	return

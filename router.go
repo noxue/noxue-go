@@ -6,11 +6,14 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"noxue/api"
 )
 
 func init() {
 	Router = gin.Default()
+	Router.Use(gin.Recovery())
+	Router.Use(Cors())
 
 	v1 := Router.Group("/v1")
 
@@ -19,4 +22,20 @@ func init() {
 
 	v1.POST("/users", api.ApiUser.Register)
 
+}
+
+
+func Cors() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "*")
+		//放行所有OPTIONS方法
+		method := c.Request.Method
+		if method == "OPTIONS" {
+			c.JSON(http.StatusOK, gin.H{"code": 0})
+			return
+		}
+		c.Next()
+	}
 }
