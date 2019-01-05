@@ -23,17 +23,19 @@ func CheckErr(err error) {
 }
 
 type ApiError struct {
-	Code int
-	Data string
+	Status int
+	Code   int
+	Data   string
 }
 
-func CheckApiError(code int, err error) {
+func CheckApiError(status, code int, err error) {
 	if err == nil {
 		return
 	}
 	panic(ApiError{
-		Code: code,
-		Data: err.Error(),
+		Status: status,
+		Code:   code,
+		Data:   err.Error(),
 	})
 }
 

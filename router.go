@@ -10,10 +10,23 @@ import (
 	"noxue/api"
 )
 
+type login struct {
+	Type     string `form:"type" json:"type" binding:"required"`
+	Id string `form:"id" json:"id" binding:"required"`
+	Password string `form:"password" json:"password" binding:"required"`
+}
+type User struct {
+	UserName string
+}
+
+const identityKey = "id"
+
 func init() {
 	Router = gin.Default()
 	Router.Use(gin.Recovery())
 	Router.Use(Cors())
+
+
 
 	v1 := Router.Group("/v1")
 
@@ -21,6 +34,7 @@ func init() {
 	v1.GET("/code", api.ApiCode.Create) // 获取邮箱或手机验证码
 
 	v1.POST("/users", api.ApiUser.Register)
+	v1.POST("/login", api.ApiUser.Login)
 
 }
 

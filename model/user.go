@@ -113,8 +113,6 @@ type UserLogin struct {
 	Type   int    // 登陆类型
 	Name   string // 账号
 	Secret string // 密码
-	CodeId string // 验证码Id
-	Code   string // 验证码
 }
 
 // 用户注册

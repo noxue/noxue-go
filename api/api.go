@@ -12,12 +12,12 @@ import (
 func checkError(c *gin.Context, e interface{}) {
 	switch type1 := e.(type) {
 	case utils.ApiError:
-		c.JSON(type1.Code, gin.H{"error": type1.Error()})
+		c.JSON(type1.Code, gin.H{"code": type1.Code, "msg": type1.Error()})
 	case utils.Error:
-		c.JSON(500, gin.H{"error": type1.Error()})
+		c.JSON(500, gin.H{"code": -1, "msg": type1.Error()})
 	case error:
-		c.JSON(500, gin.H{"error": type1.Error()})
+		c.JSON(500, gin.H{"code": -1, "msg": type1.Error()})
 	default:
-		c.JSON(500, gin.H{"error": e})
+		c.JSON(500, gin.H{"code": -1, "msg": e})
 	}
 }

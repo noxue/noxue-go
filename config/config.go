@@ -26,6 +26,7 @@ func init() {
 }
 
 type Conf struct {
+	AppKey string // 加密jwt所需要
 	Debug  bool   // 是否是调试模式
 	Server Server // 服务器信息配置
 	Db     Db     // 数据库信息
