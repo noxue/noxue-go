@@ -158,6 +158,9 @@ func (this *UserService) UserLogin(auth *model.Auth) (user model.User, authRet m
 
 	// 查询授权信息
 	authRet, err = this.AuthCheck(auth)
+	if err!=nil{
+		return
+	}
 
 	user, err = dao.UserDao.UserFindById(authRet.User.Hex())
 	return

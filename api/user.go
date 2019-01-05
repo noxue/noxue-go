@@ -75,7 +75,7 @@ func (UserApi) Login(c *gin.Context) {
 			Name:   loginReq.Name,
 			Secret: loginReq.Secret,
 		})
-		if err != nil {
+		if err == nil {
 			generateToken(c, &UserInfo{
 				Id:   user.Id.Hex(),
 				Nick: user.Name,
