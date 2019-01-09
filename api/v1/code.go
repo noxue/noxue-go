@@ -20,7 +20,7 @@ type CodeApi struct {
 func (CodeApi) Create(c *gin.Context) {
 	defer func() {
 		if e := recover(); e != nil {
-			checkError(c, e)
+			CheckError(c, e)
 		}
 	}()
 

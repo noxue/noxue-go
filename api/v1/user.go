@@ -35,7 +35,7 @@ type UserReg struct {
 func (UserApi) Register(c *gin.Context) {
 	defer func() {
 		if e := recover(); e != nil {
-			checkError(c, e)
+			CheckError(c, e)
 		}
 	}()
 
