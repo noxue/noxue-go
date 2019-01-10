@@ -53,12 +53,14 @@ type User struct {
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "*")
+		c.Writer.Header().Set("Access-Control-Max-Age", "360000")
 		//放行所有OPTIONS方法
 		method := c.Request.Method
 		if method == "OPTIONS" {
-			c.JSON(http.StatusOK, gin.H{"code": 0})
+			c.JSON(http.StatusOK, gin.H{"status": 0})
+			c.Abort()
 			return
 		}
 		c.Next()

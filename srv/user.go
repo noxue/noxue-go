@@ -43,6 +43,16 @@ func (UserService) GroupExists(name string) (isExists bool, err error) {
 }
 
 func (UserService) GroupAdd(group model.UserGroup) (err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			err = e.(utils.Error)
+		}
+	}()
+	n, err := dao.UserDao.GroupCount(ormgo.M{"name": group.Name})
+	utils.CheckErr(err)
+	if n > 0 {
+		utils.CheckErr(errors.New("该用户组已存在"))
+	}
 	err = dao.UserDao.GroupInsert(group.Name, group.Icon)
 	return
 }

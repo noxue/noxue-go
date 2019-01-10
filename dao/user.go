@@ -33,13 +33,7 @@ func (UserDaoType) GroupInsert(name string, icon string) (err error) {
 	ug := model.NewUserGroup()
 	ug.Name = name
 	ug.Icon = icon
-	n, err := ug.Count(ormgo.Query{
-		Condition: ormgo.M{"name": name},
-	})
-	utils.CheckErr(err)
-	if n > 0 {
-		utils.CheckErr(errors.New("该用户组已存在"))
-	}
+
 	return ug.Save()
 }
 

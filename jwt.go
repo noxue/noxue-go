@@ -72,7 +72,7 @@ func initJwt() {
 		LoginResponse: func(c *gin.Context, code int, s string, t time.Time) {
 			u, ok := c.Get("user")
 			if ok {
-				c.JSON(code, gin.H{"expire": t, "token": s, "user": u})
+				c.JSON(200, gin.H{"status":code, "expire": t, "token": s, "user": u})
 			} else {
 				c.JSON(401, gin.H{"status": 1000, "msg": "登陆失败"})
 			}
@@ -128,10 +128,10 @@ func initJwt() {
 		}
 
 		if code == "" {
-			utils.CheckApiError(422, -1, errors.New("验证码不能为空，请输入您收到的验证码"))
+			utils.CheckApiError(422, -1, errors.New("验证码不能为空，请输入正确的验证码"))
 		}
 		if !srv.SrvCaptcha.Verfiy(id, code) {
-			utils.CheckApiError(422, -1, errors.New("验证码不正确，请输入您收到的正确验证码"))
+			utils.CheckApiError(422, -1, errors.New("验证码不正确，请输入正确验证码"))
 		}
 		authMiddleware.LoginHandler(c)
 	})

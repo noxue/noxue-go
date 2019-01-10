@@ -13,7 +13,7 @@ var Config Conf // 保存所有的配置信息，全局可以访问
 
 func init() {
 	// 读取配置文件
-	bs, err := ioutil.ReadFile(`D:\projects\go\src\noxue\config.json`)
+	bs, err := ioutil.ReadFile(`./config.json`)
 	if err != nil {
 		panic(err)
 	}

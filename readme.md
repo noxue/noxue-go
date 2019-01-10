@@ -52,3 +52,82 @@
 * 添加图片验证码
 * 添加邮箱和手机验证码功能（未实现具体发送功能）
 * 注册功能（包括验证手机或邮箱收到的验证码）
+
+### nginx配置文件
+
+```
+upstream noxueapi {
+  server 127.0.0.1:8080;
+}
+upstream noxueui {
+  server 127.0.0.1:4000;
+}
+
+
+server {
+    listen      80;
+    server_name demo.noxue.com;
+    gzip on;
+    gzip_min_length 1k;
+    gzip_buffers 4 16k;
+    #gzip_http_version 1.0;
+    gzip_comp_level 9;
+    gzip_types text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+    gzip_vary off;
+    gzip_disable "MSIE [1-6]\.";
+
+    charset     utf-8;
+
+    location /noxueapi/ {
+        proxy_pass http://noxueapi/;
+        proxy_redirect  off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+
+    location / {
+        proxy_pass http://noxueui;
+        proxy_redirect  off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    access_log off;
+    sendfile   off;
+
+    client_max_body_size 100m;
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+
+server {
+    listen      80;
+    server_name demo-admin.noxue.com;
+    root        "/usr/local/www/noxue-admin";
+    index       index.html;
+
+
+    charset     utf-8;
+    location /{
+        try_files $uri $uri/ /index.html
+        index  index.html index.htm;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    access_log off;
+    sendfile   off;
+
+    client_max_body_size 100m;
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+```

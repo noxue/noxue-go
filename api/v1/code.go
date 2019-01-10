@@ -34,7 +34,7 @@ func (CodeApi) Create(c *gin.Context) {
 	}
 
 	if code == "" {
-		utils.CheckApiError(422, -1, errors.New("验证码不能为空，请输入您收到的验证码"))
+		utils.CheckApiError(422, -1, errors.New("验证码不能为空，请输入正确的验证码"))
 	}
 
 	if number == "" {
