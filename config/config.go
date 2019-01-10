@@ -30,6 +30,7 @@ type Conf struct {
 	Debug  bool   // 是否是调试模式
 	Server Server // 服务器信息配置
 	Db     Db     // 数据库信息
+	Sms    Sms
 }
 
 type Server struct {
@@ -40,4 +41,15 @@ type Server struct {
 type Db struct {
 	Url    string // mongodb连接字符串
 	DbName string // 数据库名
+}
+
+type Sms struct {
+	Url   string // 发送sms的网关地址
+	Id    string // 阿里sms的appid
+	Key   string
+	Sign  string // 签名名称
+	Reg   string // 注册模板code
+	Login string
+	Reset string // 重置密码
+	Bind  string // 绑定手机
 }

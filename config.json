@@ -1,5 +1,5 @@
 {
-  "appkey":"DFGHJKLasdflkjwqeiru148971654sdfasdf",
+  "appkey": "DFGHJKLasdflkjwqeiru148971654sdfasdf",
   "debug": true,
   "server": {
     "port": 8080
@@ -7,5 +7,17 @@
   "db": {
     "url": "127.0.0.1:27017",
     "dbname": "test"
+  },
+  "sms": {
+    "url": "http://dysmsapi.aliyuncs.com/",
+    "id": "LTAILKrvz9P1eehx",
+    "key": "",
+    "sign": "不学网",
+    "reg": "SMS_119092680",
+    "login": "SMS_119082858",
+    "reset": "SMS_119082859",
+    "bind": "SMS_119082860"
   }
 }
+
+
