@@ -113,6 +113,7 @@ func initJwt() {
 		glog.Fatal("JWT Error:" + err.Error())
 	}
 
+	ar1 = Router.Group("/v1")
 	r1.POST("/token", func(c *gin.Context) {
 		defer func() {
 			if e := recover(); e != nil {
@@ -135,7 +136,6 @@ func initJwt() {
 		}
 		authMiddleware.LoginHandler(c)
 	})
-	ar1 = Router.Group("/v1")
 	ar1.PUT("/token", authMiddleware.RefreshHandler)
 	ar1.Use(authMiddleware.MiddlewareFunc())
 

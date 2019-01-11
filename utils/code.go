@@ -12,15 +12,12 @@ import (
 	"noxue/config"
 )
 
-func SendEmail(email, title, content string) (err error) {
-
-	return
-}
 
 func SendRegCodeEmail(email, code string) (err error) {
-	content := `您的验证码是 ` + code
-	return SendEmail(email, "不学网用户注册验证码", content)
+	content := `验证码是:` + code
+	return SendEmail(email,"不学网用户注册",content,"")
 }
+
 
 func SendRegCodePhone(phone, code string) (err error) {
 	err = sendPhoneCode(phone,code,"reg")

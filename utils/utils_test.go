@@ -3,12 +3,3 @@
  * @date 2018/12/30 20:22
  */
 package utils
-
-import (
-	"fmt"
-	"testing"
-)
-
-func TestGenerateVerifyCode(t *testing.T) {
-	fmt.Println(GenerateVerifyCode())
-}

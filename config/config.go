@@ -13,7 +13,7 @@ var Config Conf // 保存所有的配置信息，全局可以访问
 
 func init() {
 	// 读取配置文件
-	bs, err := ioutil.ReadFile(`./config.json`)
+	bs, err := ioutil.ReadFile(`D:/projects/go/src/noxue/config.json`)
 	if err != nil {
 		panic(err)
 	}
@@ -31,6 +31,7 @@ type Conf struct {
 	Server Server // 服务器信息配置
 	Db     Db     // 数据库信息
 	Sms    Sms
+	Smtp   Smtp
 }
 
 type Server struct {
@@ -52,4 +53,12 @@ type Sms struct {
 	Login string
 	Reset string // 重置密码
 	Bind  string // 绑定手机
+}
+
+type Smtp struct {
+	Host string
+	Port int
+	Name string // 用户名
+	User string // 账号
+	Pass string
 }

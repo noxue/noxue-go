@@ -17,6 +17,13 @@
     "login": "SMS_119082858",
     "reset": "SMS_119082859",
     "bind": "SMS_119082860"
+  },
+  "smtp": {
+    "host": "smtpdm.aliyun.com",
+    "port": 25,
+    "name": "不学网",
+    "user": "noreply@email.noxue.com",
+    "pass": "ADMINadmin12345"
   }
 }
 
