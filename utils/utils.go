@@ -5,12 +5,15 @@
 package utils
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 	"github.com/gomodule/redigo/redis"
 	"golang.org/x/crypto/bcrypt"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -64,4 +67,45 @@ func Uuid() string {
 	}
 
 	return fmt.Sprintf("%x%x%x%x%x%x", unix32bits, buff[0:2], buff[2:4], buff[4:6], buff[6:8], buff[8:])
+}
+
+func ParseSelectParam(c *gin.Context) (sort []string, field map[string]bool, filter map[string]interface{}, ids []string,page int, size int, err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			err = e.(Error)
+		}
+	}()
+	sortParam := c.Query("sort")
+	fieldParam := c.Query("field")
+	pageParam := c.Query("page")
+	sizeParam := c.Query("size")
+	filterParam := c.Query("filter")
+	idsParam := c.Query("ids")
+	fmt.Println(sortParam, fieldParam, filterParam)
+	if sortParam != "" {
+		err = json.Unmarshal([]byte(sortParam), &sort)
+		CheckErr(err)
+	}
+
+	if filterParam != "" {
+		err = json.Unmarshal([]byte(filterParam), &filter)
+		CheckErr(err)
+	}
+	if fieldParam != "" {
+		err = json.Unmarshal([]byte(fieldParam), &field)
+		CheckErr(err)
+	}
+	if idsParam != "" {
+		err = json.Unmarshal([]byte(idsParam), &ids)
+		CheckErr(err)
+	}
+	if pageParam!=""{
+		page, err = strconv.Atoi(pageParam)
+		CheckErr(err)
+	}
+	if sizeParam!=""{
+		size, err = strconv.Atoi(sizeParam)
+		CheckErr(err)
+	}
+	return
 }

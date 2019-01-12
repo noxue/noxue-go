@@ -17,12 +17,12 @@
 
 | 操作|	对应请求方式|
 |----|-----|
-| 获取列表 | `GET http://my.api.url/posts?sort=['title','ASC']&range=[0, 24]&filter={title:'bar'}`|
-| 获取一条记录 |`GET http://my.api.url/posts/123`|
-| 获取多条记录 |	`GET http://my.api.url/posts?filter={ids:[123,456,789]}`|
-| 更新记录 |	`PUT http://my.api.url/posts/123`|
-| 创建记录 |`POST http://my.api.url/posts/123`|
-| 删除记录 |	`DELETE http://my.api.url/posts/123`|
+| 获取列表 | `GET http://my.api.url/posts?sort=["title"]&field={"content":false}&page=1&size=100&filter={"title":"bar"}`|
+| 获取一条记录 |`GET http://my.api.url/posts/5c28ab421d3930cf6a79fa53`|
+| 获取多条记录 |	`GET http://my.api.url/posts?ids=["5c28ab421d3930cf6a79fa53","8c28ab421d3930cf6a79fa53"]`|
+| 更新记录 |	`PUT http://my.api.url/posts/5c28ab421d3930cf6a79fa53`|
+| 创建记录 |`POST http://my.api.url/posts/5c28ab421d3930cf6a79fa53`|
+| 删除记录 |	`DELETE http://my.api.url/posts/5c28ab421d3930cf6a79fa53`|
 
 
 ##### 返回状态码

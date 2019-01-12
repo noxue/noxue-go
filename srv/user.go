@@ -67,8 +67,8 @@ func (UserService) GroupFind(name string) (group model.UserGroup, err error) {
 	return
 }
 
-func (UserService) GroupSelect(condition map[string]interface{}, sorts []string, page, size int) (groups []model.UserGroup, err error) {
-	groups, err = dao.UserDao.GroupSelect(condition, sorts, page, size)
+func (UserService) GroupSelect(condition map[string]interface{}, fields map[string]bool, sorts []string) (groups []model.UserGroup, err error) {
+	groups, err = dao.UserDao.GroupSelect(condition, fields, sorts, 0, 0)
 	return
 }
 
@@ -91,7 +91,7 @@ func (this *UserService) GroupSelectByApi(api string) (groups []model.UserGroup,
 	// 根据groupId数组查询出满足条件的group文档
 	dao.UserDao.GroupSelect(ormgo.M{
 		"_id": ormgo.M{"$in": ids},
-	}, nil, 0, 0)
+	}, nil, nil, 0, 0)
 	return
 }
 
@@ -168,7 +168,7 @@ func (this *UserService) UserLogin(auth *model.Auth) (user model.User, authRet m
 
 	// 查询授权信息
 	authRet, err = this.AuthCheck(auth)
-	if err!=nil{
+	if err != nil {
 		return
 	}
 
@@ -191,7 +191,7 @@ func (UserService) UserGetGroups(uid string) (groups []model.UserGroup, err erro
 		"_id": ormgo.M{
 			"$in": u.Groups,
 		},
-	}, nil, 0, 0)
+	}, nil, nil, 0, 0)
 
 	return
 }
@@ -276,7 +276,7 @@ func (UserService) UserRemoveFromGroup(uid, groupId string) (err error) {
 func (UserService) AuthExists(auth *model.Auth) (isExists bool, err error) {
 	var n int
 	n, err = dao.UserDao.AuthCount(ormgo.M{
-		"type":     auth.Type,
+		"type": auth.Type,
 		"name": auth.Name,
 	})
 

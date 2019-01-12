@@ -6,6 +6,7 @@ package v1
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"noxue/model"
 	"noxue/srv"
@@ -72,4 +73,20 @@ func (UserApi) Register(c *gin.Context) {
 	utils.CheckApiError(422, -1, err)
 
 	c.JSON(200, gin.H{})
+}
+
+
+func  (UserApi)GroupList(c *gin.Context){
+	defer func() {
+		if e := recover(); e != nil {
+			CheckError(c, e)
+		}
+	}()
+
+	fmt.Println(utils.ParseSelectParam(c))
+
+	groups,err := srv.SrvUser.GroupSelect(nil,nil,nil)
+	utils.CheckErr(err)
+	c.JSON(200,gin.H{"data":groups})
+
 }

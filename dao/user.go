@@ -37,11 +37,12 @@ func (UserDaoType) GroupInsert(name string, icon string) (err error) {
 	return ug.Save()
 }
 
-func (UserDaoType) GroupSelect(condition ormgo.M, sorts []string, page, size int) (userGroups []model.UserGroup, err error) {
+func (UserDaoType) GroupSelect(condition ormgo.M, fields map[string]bool, sorts []string, page, size int) (userGroups []model.UserGroup, err error) {
 
 	query := ormgo.Query{
 		Condition:  condition,
 		SortFields: sorts,
+		Selector:   fields,
 		Limit:      size,
 		Skip:       (page - 1) * size,
 	}
@@ -75,7 +76,7 @@ func (UserDaoType) GroupFindById(id string) (userGroup model.UserGroup, err erro
 }
 
 func (UserDaoType) GroupFindByName(name string) (userGroup model.UserGroup, err error) {
-	err = ormgo.FindOne(ormgo.M{"name":name}, nil, &userGroup)
+	err = ormgo.FindOne(ormgo.M{"name": name}, nil, &userGroup)
 	return
 }
 
