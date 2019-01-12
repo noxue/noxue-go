@@ -15,8 +15,8 @@ import (
 type UserGroup struct {
 	ormgo.Model `bson:",inline"`
 	Id          bson.ObjectId `bson:"_id,omitempty" json:"Id,omitempty"`
-	Name        string // 用户组名称
-	Icon        string // 用户组图标
+	Name        string `json:",omitempty"`// 用户组名称
+	Icon        string `json:",omitempty"`// 用户组图标
 }
 
 func NewUserGroup() *UserGroup {

@@ -6,7 +6,6 @@ package v1
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"noxue/model"
 	"noxue/srv"
@@ -20,7 +19,6 @@ type UserApi struct {
 }
 
 // ==========================================================================
-
 
 // 用户注册
 type UserReg struct {
@@ -72,21 +70,21 @@ func (UserApi) Register(c *gin.Context) {
 	err = srv.SrvUser.UserRegister(&user, &auth)
 	utils.CheckApiError(422, -1, err)
 
-	c.JSON(200, gin.H{})
+	c.JSON(200, gin.H{"status":0,"msg":"注册成功"})
 }
 
-
-func  (UserApi)GroupList(c *gin.Context){
+func (UserApi) GroupList(c *gin.Context) {
 	defer func() {
 		if e := recover(); e != nil {
 			CheckError(c, e)
 		}
 	}()
 
-	fmt.Println(utils.ParseSelectParam(c))
+	sort, field, filter, _, _, _, err := utils.ParseSelectParam(c)
+	utils.CheckApiError(400, -1, err)
 
-	groups,err := srv.SrvUser.GroupSelect(nil,nil,nil)
+	groups, err := srv.SrvUser.GroupSelect(filter, field, sort)
 	utils.CheckErr(err)
-	c.JSON(200,gin.H{"data":groups})
+	c.JSON(200, gin.H{"status":0,"data": groups})
 
 }
